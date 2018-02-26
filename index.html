@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>鼠标方位判断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        a {
+            text-decoration: none;
+            position: absolute;
+            top: 400px;
+            left: 0;
+            width: 250px;
+            height: 400px;
+            display: block;
+            background-color: #666;
+            opacity: .8;
+        }
+
+
+        #box {
+            display: flex;
+            align-items: center;
+        }
+        ul {
+            margin: 100px auto;
+            display: flex;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        li {
+            margin: auto 20px;
+            position: relative;
+            list-style: none;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        li img {
+            width: 250px;
+            height: 400px;
+        }
+
+        li a p{
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        li a .p1 {
+            padding-top: 160px;
+            color: pink;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="box">
+        <ul id="list">
+            <li><img src="img/1.jpg" alt="">
+                <a href="#">
+                    <p class="p1">你是否问过自己</p>
+                    <p>拥有什么</p>
+                </a>
+            </li>
+            <li><img src="img/2.jpg" alt="">
+                <a href="#">
+                    <p class="p1">为了要拥有那些</p>
+                    <p>付出什么</p>
+                </a>
+            </li>
+            <li><img src="img/3.jpg" alt="">
+                <a href="#">
+                    <p class="p1">追逐的人生换来</p>
+                    <p>那些什么</p>
+                </a></li>
+            <li><img src="img/4.jpg" alt="">
+                <a href="#">
+                    <p class="p1">从何时我们都已</p>
+                    <p>拥有很多</p>
+                </a></li>
+            <li><img src="img/5.jpg" alt="">
+                <a href="#">
+                    <p class="p1">已不像当时你我</p>
+                    <p>一无所有</p>
+                </a></li>
+        </ul>
+    </div>
+    <script >
+        var oBox = document.getElementById("box");
+        var aLi = oBox.getElementsByTagName("li");
+//        for (var i=0,len=aLi.length;i<len;i++){          //for循环性能差，使用事件绑定、事件监听
+//            aLi[i].onmouseenter = function () {
+//                console.log(1);
+//            }
+//            aLi[i].onmouseleave = function () {
+//                console.log(2);
+//            }
+//        }
+        console.log(window.navigator);
+
+        oBox.addEventListener("mouseenter", move,true);
+        oBox.addEventListener("mouseleave", move,true);
+        function move(e) {
+            var e = e||event;
+            var target = e.target;
+            if (target.tagName.toLowerCase()=="li"){
+                var x = e.clientX;
+                var y = e.clientY;
+                var wTop = target.offsetTop;
+                var  wBottom = wTop + target.clientHeight;
+                var wLeft = target.offsetLeft;
+                var wRight = wLeft + target.clientWidth;
+                var sT = Math.abs(y - wTop);
+                var sB = Math.abs(y - wBottom);
+                var sL = Math.abs(x - wLeft);
+                var sR = Math.abs(x - wRight);
+                var direaction = Math.min(sT,sB,sL,sR);
+                var val = e.type.toLowerCase();
+                var h = target.clientHeight;
+                var w = target.clientWidth;
+                switch (direaction) {
+                    case sT:
+                        moveTo("top",val,target,-h,0);
+                        break;
+                    case sB:
+                        moveTo("top",val,target,h,0);
+                        break;
+                    case sL:
+                        moveTo("left",val,target,-w,0);
+                        break;
+                    case sR:
+                        moveTo("left",val,target,w,0);
+                        break
+                }
+            }
+        }
+        
+        function moveTo(aspect,a,aim,f,t) {
+            if (aspect == "top"){
+                if(a=="mouseenter"){
+                    aim.children[1].css(f,aspect).enter(t,aspect);
+                }else {
+                    aim.children[1].leave(f,aspect);
+                }
+            } else if (aspect == "left"){
+                if(a=="mouseenter"){
+                    aim.children[1].css(f,aspect).enter(t,aspect);
+                }else {
+                    aim.children[1].leave(f,aspect);
+                }
+            }
+        }
+        Node.prototype.css = function (f,aspect) {
+            if (aspect == "top"){
+                this.style[aspect] = f + "px";
+                this.style.left = 0;
+            }else if(aspect == "left") {
+                this.style[aspect] = f + "px";
+                this.style.top = 0;
+            }
+            return this;
+        }
+
+        Node.prototype.enter = function (t,aspect) {
+            setTimeout(function () {
+                this.style[aspect] = t + "px";
+                this.style.transition=".3s";
+            }.bind(this),0);
+            return this;
+        }
+
+        Node.prototype.leave = function (f,aspect) {
+            this.style[aspect] = f + "px";
+            this.style.transition=".3s";
+            this.addEventListener("transitionend",function () {
+                this.style.transition="";
+            });
+            return this;
+        }
+
+
+    </script>
+
+</body>
+</html>
